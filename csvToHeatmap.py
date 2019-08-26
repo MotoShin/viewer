@@ -12,11 +12,7 @@ import matplotlib.font_manager as fm
 from util import dfToNumpy, make_dir
 
 def field_heatmap(name, field, nrow, ncol, ndim, dir_name, num=0):
-    fig = plt.figure()
-    ax1 = fig.add_subplot(2, 2, 1)
-    ax2 = fig.add_subplot(2, 2, 2)
-    ax3 = fig.add_subplot(2, 2, 3)
-    ax4 = fig.add_subplot(2, 2, 4)
+    fig, ax = plt.subplots(2, 2, figsize=(10, 4))
 
     temp_field = np.zeros(nrow * 3 * ncol * 3)
     temp_field = temp_field.reshape(nrow * 3, ncol * 3)
@@ -42,10 +38,10 @@ def field_heatmap(name, field, nrow, ncol, ndim, dir_name, num=0):
                 plot_field[dim][center_x][center_y + 1] = temp[2] #DWON
                 plot_field[dim][center_x + 1][center_y + 1] = np.mean(temp)
 
-    sns.heatmap(plot_field[0], ax=ax1)
-    sns.heatmap(plot_field[1], ax=ax2)
-    sns.heatmap(plot_field[2], ax=ax3)
-    sns.heatmap(plot_field[3], ax=ax4)
+    sns.heatmap(plot_field[0], ax=ax[0, 0])
+    sns.heatmap(plot_field[1], ax=ax[0, 1])
+    sns.heatmap(plot_field[2], ax=ax[1, 0])
+    sns.heatmap(plot_field[3], ax=ax[1, 1])
     ### ヒートマップ上にグリッドを引いている ###
     vertices = []
     codes = []
@@ -53,8 +49,8 @@ def field_heatmap(name, field, nrow, ncol, ndim, dir_name, num=0):
     a = 0
     b = 2.95
     vertices = [(a, a), (b, a), (b, b), (a, b), (0, 0)]
-    for i in range(0, ncol):
-        for t in range(0, nrow):
+    for t in range(0, ncol):
+        for i in range(0, nrow):
             codes += [Path.MOVETO] + [Path.LINETO]*3 + [Path.CLOSEPOLY]
             vertices += [(a+t*3, a+i*3), (b+t*3, a+i*3), (b+t*3, b+i*3), (a+t*3, b+i*3), (0, 0)]
     vertices = np.array(vertices, float)
@@ -63,17 +59,25 @@ def field_heatmap(name, field, nrow, ncol, ndim, dir_name, num=0):
     pathpatch2 = PathPatch(path, facecolor='None', edgecolor='white', linewidth=0.5)
     pathpatch3 = PathPatch(path, facecolor='None', edgecolor='white', linewidth=0.5)
     pathpatch4 = PathPatch(path, facecolor='None', edgecolor='white', linewidth=0.5)
-    ax1.add_patch(pathpatch1)
-    ax2.add_patch(pathpatch2)
-    ax3.add_patch(pathpatch3)
-    ax4.add_patch(pathpatch4)
+    ax[0, 0].add_patch(pathpatch1)
+    ax[0, 1].add_patch(pathpatch2)
+    ax[1, 0].add_patch(pathpatch3)
+    ax[1, 1].add_patch(pathpatch4)
     ### ここまで ###
     ### 軸の数字と目盛りを消している ###
-    ax1.tick_params(bottom=False, left=False, labelbottom=False, labelleft=False)
-    ax2.tick_params(bottom=False, left=False, labelbottom=False, labelleft=False)
-    ax3.tick_params(bottom=False, left=False, labelbottom=False, labelleft=False)
-    ax4.tick_params(bottom=False, left=False, labelbottom=False, labelleft=False)
+    ax[0, 0].tick_params(bottom=False, left=False, labelbottom=False, labelleft=False)
+    ax[0, 1].tick_params(bottom=False, left=False, labelbottom=False, labelleft=False)
+    ax[1, 0].tick_params(bottom=False, left=False, labelbottom=False, labelleft=False)
+    ax[1, 1].tick_params(bottom=False, left=False, labelbottom=False, labelleft=False)
     ### ここまで ###
+
+    # 余白を設定
+    plt.subplots_adjust(wspace=0.05, hspace=1.2)
+    # タイトルを設定
+    ax[0,0].set_title("Q values in 999 epi of Q-Learning", fontsize=15)
+    ax[0,1].set_title("Q values in 9999 epi of Q-Learning", fontsize=15)
+    ax[1,0].set_title("Q values in 999 epi of RS+GRC", fontsize=15)
+    ax[1,1].set_title("Q values in 9999 epi of RS+GRC", fontsize=15)
     if num == 0:
         fig.savefig(dir_name+"%s_Heatmap.png" % name)
     else:
