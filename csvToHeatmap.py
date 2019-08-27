@@ -12,7 +12,7 @@ import matplotlib.font_manager as fm
 from util import dfToNumpy, make_dir
 
 def field_heatmap(name, field, nrow, ncol, ndim, dir_name, num=0):
-    fig, ax = plt.subplots(2, 2, figsize=(10, 4))
+    fig, ax = plt.subplots(2, 2, figsize=(10, 3))
 
     temp_field = np.zeros(nrow * 3 * ncol * 3)
     temp_field = temp_field.reshape(nrow * 3, ncol * 3)
@@ -74,10 +74,10 @@ def field_heatmap(name, field, nrow, ncol, ndim, dir_name, num=0):
     # 余白を設定
     plt.subplots_adjust(wspace=0.05, hspace=1.2)
     # タイトルを設定
-    ax[0,0].set_title("Q values in 999 epi of Q-Learning", fontsize=15)
-    ax[0,1].set_title("Q values in 9999 epi of Q-Learning", fontsize=15)
-    ax[1,0].set_title("Q values in 999 epi of RS+GRC", fontsize=15)
-    ax[1,1].set_title("Q values in 9999 epi of RS+GRC", fontsize=15)
+    ax[0,0].set_title("Q-values in 999 epi of Q-Learning", fontsize=15)
+    ax[0,1].set_title("Q-values in 9999 epi of Q-Learning", fontsize=15)
+    ax[1,0].set_title("Q-values in 999 epi of RS+GRC", fontsize=15)
+    ax[1,1].set_title("Q-values in 9999 epi of RS+GRC", fontsize=15)
     if num == 0:
         fig.savefig(dir_name+"%s_Heatmap.png" % name)
     else:
