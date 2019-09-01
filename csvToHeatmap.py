@@ -84,6 +84,37 @@ def field_heatmap(name, field, nrow, ncol, ndim, dir_name, num=0):
         fig.savefig(dir_name+"Heatmap_{}.png".format(num))
     plt.close()
 
+def barGraph(name, data, dir_name):
+    left = np.arange(5)
+    labels = ['37', '38', '39', '40', '41']
+
+    width = 0.3
+
+    fig, ax = plt.subplots(2, 2)
+    print(data.max())
+
+    for i in range(2):
+        for k in range(2):
+            num = i * 2 + k * 1
+            ax[i, k].bar(left, data.T[0][num*5:num*5+5], color='#ef5350', width=width)
+            ax[i, k].bar(left+width, data.T[1][num*5:num*5+5], color='#42A5F5', width=width)
+            ax[i,k].set_xticks(left + width / 2)
+            # ax[i,k].set_xlim([37, 41])
+            ax[i,k].xaxis.set_ticklabels(labels)
+            # ax[i,k].set_ylim([0.00, data.max()])
+            ax[i,k].set_ylim([0.00, 1.25])
+            ax[i,k].set_xlabel("State number")
+            ax[i,k].set_ylabel("Q-value")
+
+    # plt.xticks(left + width/2, labels)
+    plt.subplots_adjust(wspace=0.6, hspace=0.5)
+    ax[0,0].set_title("Q-values in Q-Learning at episode 1999", fontsize=12)
+    ax[0,1].set_title("Q-values in Q-Learning at episode 9999", fontsize=12)
+    ax[1,0].set_title("Q-values in RS+GRC at episode 1999", fontsize=12)
+    ax[1,1].set_title("Q-values in RS+GRC at episode 9999", fontsize=12)
+    fig.savefig(dir_name+name+".png")
+    plt.close()
+
 if __name__ == '__main__':
     args = sys.argv
     sns.set()
@@ -98,11 +129,11 @@ if __name__ == '__main__':
     make_dir("/"+dir_csv_name)
 
     # Q-Learningの前半のデータを抽出
-    qlQDataFirstPattern = pd.read_csv(dir_csv_name+"QL/midMap_Q_999.csv")
+    qlQDataFirstPattern = pd.read_csv(dir_csv_name+"QL/midMap_Q_1999.csv")
     # Q-Learningの後半のデータを抽出
     qlQDataFinalPattern = pd.read_csv(dir_csv_name+"QL/midMap_Q_9999.csv")
     # RS+GRCの前半のデータを抽出
-    rsQDataFirstPattern = pd.read_csv(dir_csv_name+"RS+GRC/midMap_Q_999.csv")
+    rsQDataFirstPattern = pd.read_csv(dir_csv_name+"RS+GRC/midMap_Q_1999.csv")
     # RS+GRCの後半のデータを抽出
     rsQDataFinalPattern = pd.read_csv(dir_csv_name+"RS+GRC/midMap_Q_9999.csv")
 
@@ -124,6 +155,20 @@ if __name__ == '__main__':
     # numpy配列に変換
     data = np.array(dataDf.values.flatten())    
     data = data.reshape(20, 4)
-    print(data)
 
-    field_heatmap("compareQValue", data, 1, 5, 4, dir_png_name)
+    twoData = np.array([np.zeros(2) for _ in range(20)])
+    for i in range(20):
+        if i == 0 and i % 5 == 0:
+            twoData[i][0] = data[i][3]
+            twoData[i][1] = data[i][2]
+        elif i % 4 == 0:
+            twoData[i][0] = data[i][0]
+            twoData[i][1] = data[i][3]
+        else:
+            twoData[i][0] = data[i][0]
+            twoData[i][1] = data[i][2]
+
+    print(twoData)
+
+    # field_heatmap("compareQValue", data, 1, 5, 4, dir_png_name)
+    barGraph("compareQValue", twoData, dir_png_name)
